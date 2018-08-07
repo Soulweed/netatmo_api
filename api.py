@@ -1,6 +1,12 @@
 import requests
 import json
 
+
+def push2db(persons):
+    print('Start Connect to database')
+    return True
+
+
 class API :
     def __init__(self, **kwargs):
         # Initialized common attributes
@@ -38,6 +44,24 @@ class API :
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
 
+    def send_request(self):
+        # Get Home Data
+        # GET https://api.netatmo.net/api/gethomedata
+
+        try:
+            response = requests.get(
+                    url="https://api.netatmo.net/api/gethomedata",
+                    params={
+                        "access_token":"59e43899b26ddf6c058ba402|f7668750f6799334ace90f576df0666d",
+                    },
+            )
+            print('Response HTTP Status Code: {status_code}'.format(
+                    status_code=response.status_code))
+            print('Response HTTP Response Body: {content}'.format(
+                    content=response.content))
+        except requests.exceptions.RequestException:
+            print('HTTP Request failed')
+
     def get_home_data(self,k):
         print('Get home data API')
         # Get Home Data
@@ -54,26 +78,45 @@ class API :
                 status_code=response.status_code))
             temp = json.loads(response.content)
             persons =((temp.get('body')).get('homes')[0]).get('persons')
+            persons_list = []
             for ind in range(len(persons)):
                 if persons[ind].has_key('pseudo'):
-                    print('------------------------------------------------')
-                    print('Name     : '+(persons[ind].get('pseudo')).encode('utf-8','unicode')) # Some pseudo is invalid format
-                    print('Face ID  : '+str((persons[ind].get('face')).get('id')))
-                    print('Face Key : '+str((persons[ind].get('face')).get('key')))
-                    print('------------------------------------------------')
+                    # print('------------------------------------------------')
+                    # print('Name     : '+(persons[ind].get('pseudo')).encode('utf-8','unicode')) # Some pseudo is invalid format
+                    # print('Face ID  : '+str((persons[ind].get('face')).get('id')))
+                    # print('Face Key : '+str((persons[ind].get('face')).get('key')))
+                    # print('------------------------------------------------')
+                    persons_list.append(persons[ind])
+                    if persons[ind].get('out_of_sight') == False:
+                        print((persons[ind].get('pseudo')).encode('utf-8','unicode')+" at home")
+
+            # TODO : Add Known people from netatmo welcome to Database
+            flag = push2db(persons_list)
+
+            if flag :
+
+                print('Updatae Database Successful')
+
+            else:
+
+                print('Update Database Failure')
+
+
             return persons
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
 
 
+
 def main():
 
     netatmo = API()
+    # netatmo.send_request()
     content = netatmo.get_access_token()
     access_token = content.get('access_token')
     refresh_token = content.get('refresh_token')
     home_data = netatmo.get_home_data(access_token)
-
+    print("Debug")
 
 if __name__ == '__main__':
     main()
