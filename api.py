@@ -23,6 +23,7 @@ class API :
         # Request Netatmo
         # POST https://api.netatmo.com/oauth2/token
         try:
+            # TODO : Important - change data parameter for a new netatmo
             response = requests.post(
                 url="https://api.netatmo.com/oauth2/token",
                 headers={
@@ -44,23 +45,23 @@ class API :
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
 
-    def send_request(self):
-        # Get Home Data
-        # GET https://api.netatmo.net/api/gethomedata
-
-        try:
-            response = requests.get(
-                    url="https://api.netatmo.net/api/gethomedata",
-                    params={
-                        "access_token":"59e43899b26ddf6c058ba402|f7668750f6799334ace90f576df0666d",
-                    },
-            )
-            print('Response HTTP Status Code: {status_code}'.format(
-                    status_code=response.status_code))
-            print('Response HTTP Response Body: {content}'.format(
-                    content=response.content))
-        except requests.exceptions.RequestException:
-            print('HTTP Request failed')
+    # def send_request(self):
+    #     # Get Home Data
+    #     # GET https://api.netatmo.net/api/gethomedata
+    #
+    #     try:
+    #         response = requests.get(
+    #                 url="https://api.netatmo.net/api/gethomedata",
+    #                 params={
+    #                     "access_token":"59e43899b26ddf6c058ba402|f7668750f6799334ace90f576df0666d",
+    #                 },
+    #         )
+    #         print('Response HTTP Status Code: {status_code}'.format(
+    #                 status_code=response.status_code))
+    #         print('Response HTTP Response Body: {content}'.format(
+    #                 content=response.content))
+    #     except requests.exceptions.RequestException:
+    #         print('HTTP Request failed')
 
     def get_home_data(self,k):
         print('Get home data API')
@@ -116,7 +117,7 @@ def main():
     access_token = content.get('access_token')
     refresh_token = content.get('refresh_token')
     home_data = netatmo.get_home_data(access_token)
-    print("Debug")
+    print(home_data)
 
 if __name__ == '__main__':
     main()
